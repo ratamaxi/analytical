@@ -38,14 +38,14 @@
             "production": {
               "budgets": [
                 {
-                  "type": "initial",
+                  "maximumError": "4mb",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "type": "initial"
                 },
                 {
-                  "type": "anyComponentStyle",
+                  "maximumError": "4kb",
                   "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "type": "anyComponentStyle"
                 }
               ],
               "outputHashing": "all"
