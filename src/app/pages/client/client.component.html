@@ -1,0 +1,183 @@
+<div class="row p-5 d-flex justify-content-between">
+  <div class="col">
+      <h3 class="title">Datos del cliente</h3>
+      <p class="sub-titulo">
+        Ingrese código o nombre del cliente.
+        </p>
+  </div>
+  <div class="col-12 col-sm-5 pt-3">
+    <div class="form">
+      <i class="fa fa-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        class="form-control form-input"
+        placeholder="Ingrese el número de serie que desea buscar..."
+      />
+    </div>
+    <span class="text-adv" *ngIf="busqueda.length < 3">Ingresar al menos 3 caracteres.</span>
+  </div>
+  <div class="pl-3 btn-top">
+    <button [disabled]="busqueda.length < 3" class="btn btn-primary h-button"
+      (click)="buscarDataLista()">
+      Buscar
+    </button>
+  </div>
+</div>
+<div class="row" *ngIf="spinner">
+  <div class="col d-flex justify-content-center">
+    <app-spinner></app-spinner>
+  </div>
+</div>
+
+<div class="row px-5 pt-3 fadeIn cursor" *ngIf="dataList.length > 0">
+  <span class="title-result w-100 pb-2">Listado de Clientes</span>
+  <div class="col tabla-scroll">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Codigo</th>
+          <th>ID Fiscal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="pointer usuario-selector fadeIn" *ngFor="let item of dataList" (click)="buscarData(item.CardCode)">
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.CardName ? item.CardName : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.CardCode ? item.CardCode : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.FederalTaxID ? item.FederalTaxID : "-" }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row px-5 fadeIn" *ngIf="data.length > 0">
+  <div class="col-4">
+    <div class="pb-3">
+      <span class="title-result">Nombre</span>
+      <span class="">{{data[0].CardName ? data[0].CardName : '-'}}</span> 
+    </div>
+    <div class="pb-3">
+      <span class="title-result">Dirección</span>
+      <span class="">{{data[0].Address ? data[0].Address : '-'}}</span> 
+    </div>
+    <div class="pb-3">
+      <span class="title-result">CP</span>
+      <span class="">{{data[0].ZipCode ? data[0].ZipCode : '-'}}</span> 
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="pb-3">
+    <span class="title-result">Código</span>
+    <span class="">{{data[0].CardCode ? data[0].CardCode : '-'}}</span>
+    </div>
+    <div class="pb-3">
+      <span class="title-result">Ciudad</span>
+      <span class="">{{data[0].City ? data[0].City : '-'}}</span> 
+    </div>
+    <div class="pb-3">
+      <span class="title-result">Contacto</span>
+      <span class="">{{data[0].ContactPerson ? data[0].ContactPerson : "-"}}</span> 
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="pb-3">
+    <span class="title-result">ID Fiscal</span>
+    <span class="">{{data[0].FederalTaxID ? data[0].FederalTaxID : "-"}}</span>  
+    </div>
+    <div class="pb-3">
+      <span class="title-result">País</span>
+      <span class="">{{data[0].Country ? data[0].Country : '-'}}</span> 
+    </div>
+    <div class="pb-3">
+      <span class="title-result">Email</span>
+      <span class="">{{data[0].EmailAddress ? data[0].EmailAddress  : '-'}}</span> 
+    </div>
+  </div>
+</div>
+
+<div class="row px-5 pt-3 fadeIn" *ngIf="data.length > 0 && data[0].BPAddresses.length > 0">
+  <span class="title-result w-100 pb-2">Listado de Direcciones</span>
+  <div class="col tabla-scroll">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Dirección</th>
+          <th>Calle</th>
+          <th>CP</th>
+          <th>Ciudad</th>
+          <th>País</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="pointer usuario-selector fadeIn" *ngFor="let item of data[0].BPAddresses">
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.AddressName ? item.AddressName : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.Street ? item.Street : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.ZipCode ? item.ZipCode : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.City ? item.City : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.Country ? item.Country : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio" class="min-width">
+            {{ item.State ? item.State : "-" }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row px-5 pt-3 fadeIn" *ngIf="data.length > 0  && data[0].ContactEmployees.length > 0">
+  <span class="title-result w-100 pb-2">Listado de Contactos</span>
+  <div class="col tabla-scroll">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Posición</th>
+          <th>Teléfono</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="pointer usuario-selector fadeIn" *ngFor="let item of data[0].ContactEmployees">
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.Name ? item.Name : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.Position ? item.Position : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.Phone1 ? item.Phone1 : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ item.E_Mail ? item.E_Mail : "-" }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="row px-5 fadeIn" *ngIf="data.length === 0 && showEmpty && dataList.length === 0">
+  <div class="box-empty d-flex align-items-center justify-content-center flex-column">
+    <img class="icono" src="../../../assets/img/caja.png">
+    <span class="pt-2">No se encontraron resultados a la búsqueda <b>{{busquedaEmpty}}</b></span>
+  </div>
+</div>

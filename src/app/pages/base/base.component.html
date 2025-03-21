@@ -1,0 +1,106 @@
+<div class="row p-5">
+  <div class="col-4">
+    <h3 class="title">Base Instalada</h3>
+    <span class="sub-titulo">Podrá buscar por número de serie</span>
+  </div>
+  <div class="col-8 d-flex justify-content-end">
+  <div class="w-400">
+    <span class="title f-14 pb-2 d-block">Nombre o Número de serie</span>
+    <div class="form">
+      <i class="fa fa-search"></i>
+      <input type="text" [(ngModel)]="busqueda" class="form-control form-input"
+        placeholder="Ingrese un valor a buscar...">
+    </div>
+  </div>
+  <div class="w-400 pl-3">
+    <span class="title f-14 pb-2 d-block">System Handle</span>
+    <div class="form">
+      <i class="fa fa-search"></i>
+      <input type="text" [(ngModel)]="busquedaHandle" class="form-control form-input"
+        placeholder="Ingrese un System Handle...">
+    </div>
+  </div>
+  <div class="pl-3 btn-top">
+    <button class="btn btn-primary h-button" data-bs-toggle="modal" data-bs-target="#agregarEjercicio"
+      (click)="buscarData()">
+      Buscar
+    </button>
+  </div>
+</div>
+</div>
+
+<div class="row">
+  <div class="col tabla-scroll">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Cliente</th>
+          <th>PartNumber</th>
+          <th>Descripción</th>
+          <th>Número de Serie</th>
+          <th>System Handle</th>
+          <th>Tag del Cliente</th>
+          <th>PL</th>
+          <th>Calle</th>
+          <th>Ciudad</th>
+          <th>Provincia</th>
+          <th>País</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="pointer usuario-selector fadeIn" *ngFor="let usuario of data">
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.CustomerCode ? usuario.CustomerCode : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.CustomerName ? usuario.CustomerName : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.ItemCode ? usuario.ItemCode : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.ItemDescription ? usuario.ItemDescription : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.InternalSerialNum ? usuario.InternalSerialNum : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.U_SEI_SYSTEMHandle ? usuario.U_SEI_SYSTEMHandle : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.U_SEI_TagCliente ? usuario.U_SEI_TagCliente : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.U_PL ? usuario.U_PL : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.Street ? usuario.Street : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.City ? usuario.City : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.StateCode ? usuario.StateCode : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.CountryCode ? usuario.CountryCode : "-" }}
+          </td>
+          <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+            {{ usuario.StatusOfSerialNumber ? usuario.StatusOfSerialNumber : "-" }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- <ng-container *ngIf="showLoader" [ngTemplateOutlet]="loading"></ng-container> -->
+  </div>
+</div>
+
+<div class="row px-5 fadeIn" *ngIf="data.length === 0 && showEmpty">
+  <div class="box-empty d-flex align-items-center justify-content-center flex-column">
+    <img class="icono" src="../../../assets/img/caja.png">
+    <span class="pt-2">No se encontraron resultados a la búsqueda <b>{{busquedaEmpty}}</b></span>
+  </div>
+</div>
+

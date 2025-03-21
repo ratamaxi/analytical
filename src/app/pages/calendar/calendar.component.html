@@ -1,0 +1,54 @@
+<div class="row p-5">
+  <div class="col">
+    <h3 class="title">Calendario</h3>
+    <span class="sub-titulo">
+      Ingrese un rango de fecha o una fecha única
+    </span>
+  </div>
+</div>
+
+<div class="row" *ngIf="spinner">
+  <div class="col d-flex justify-content-center">
+    <app-spinner></app-spinner>
+  </div>
+</div>
+
+<div class="row px-3" *ngIf="dataCalendar?.length && !showError">
+<div class="px-5 col-6">
+  <span class="title-result w-100 pb-2">Listado de Empleados</span>
+  <select class="form-control selected" (change)="filtrarPorEmpleado($event)">
+    <option value="" disabled selected>Seleccione un empleado</option>
+    <option *ngFor="let empleado of listaEmpleadosData" [value]="empleado.EmployeeID">
+      {{ empleado.LastName }} {{ empleado.FirstName }}
+    </option>
+  </select>  
+</div>
+<div class="col-6 d-flex justify-content-end" >
+  <mat-form-field>
+    <mat-label>Ingrese el Rango de Fechas</mat-label>
+    <mat-date-range-input [rangePicker]="picker" (dateChange)="buscarFechas()">
+      <input matStartDate placeholder="Fecha inicio" [(ngModel)]="startDate">
+      <input matEndDate placeholder="Fecha fin" [(ngModel)]="endDate">
+    </mat-date-range-input>
+    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-date-range-picker #picker></mat-date-range-picker>
+  </mat-form-field>
+  <div class="pl-3">
+    <button class="btn btn-primary h-button" [disabled]="!validButton" 
+      (click)="buscarFechas()">
+      Buscar
+    </button>
+  </div>
+</div>
+</div>
+
+<div class="px-5 pt-4" *ngIf="showTable && !showError">
+  <full-calendar [options]="calendarOptions"></full-calendar>
+</div>
+
+<div class="row px-5 fadeIn" *ngIf="showError">
+  <div class="box-empty d-flex align-items-center justify-content-center flex-column">
+    <img class="icono" src="../../../assets/img/cancelar.png">
+    <span class="pt-2">{{mensajeError}}</span>
+  </div>
+</div>

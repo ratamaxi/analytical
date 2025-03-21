@@ -1,0 +1,93 @@
+<div class="row p-5 d-flex justify-content-between">
+    <div class="col">
+        <h3 class="title">Historial de reparaciones</h3>
+        <p class="sub-titulo">
+            Inserte un número de serie para buscar un equipo.
+          </p>
+    </div>
+    <div class="col-12 col-sm-5 pt-3">
+      <div class="form">
+        <i class="fa fa-search"></i>
+        <input
+          type="text"
+          [(ngModel)]="busqueda"
+          class="form-control form-input"
+          placeholder="Ingrese el número de serie que desea buscar..."
+        />
+      </div>
+    </div>
+    <div class="pl-3 btn-top">
+      <button class="btn btn-primary h-button" data-bs-toggle="modal" data-bs-target="#agregarEjercicio"
+        (click)="buscarData()">
+        Buscar
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col tabla-scroll">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Llamada de Servicio</th>
+            <th>Código de Cliente</th>
+            <th>Cliente</th>
+            <th>Repair Class</th>
+            <th>Comentarios</th>
+            <th>Detalle</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Programación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="pointer usuario-selector fadeIn" *ngFor="let item of data">
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+              {{ item["Llamada de Servicio"] ? item["Llamada de Servicio"] : "-" }}
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+              {{ item.customer ? item.customer : "-" }}
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+              {{ item.custmrName ? item.custmrName : "-" }}
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+              {{ item.U_Dscripcion ? item.U_Dscripcion : "-" }}
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+              {{ item.Details ? item.Details : "-" }}
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio">
+              {{ item.Notes ? item.Notes : "-" }}
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio" class="min-width">
+              {{ item.BeginTime | timeFormat }} <br> {{ item.Recontact | dateFormat }}
+            </td>
+
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio" class="min-width">
+              {{ item.ENDTime | timeFormat }} <br> {{ item.endDate | dateFormat }}
+            </td>
+
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio" *ngIf="item.firstName" class="programacion">
+              Técnico: {{ item.firstName }} {{ item.lastName }} <br>
+              Fecha Inicio :  {{ item.StartDate | dateFormat }} <br>
+              Fecha Fin :  {{ item.endDate | dateFormat }} <br>
+              Partes :  {{ item.U_SEI_OrdenVenta }} <br>
+            </td>
+            <td data-bs-toggle="modal" data-bs-target="#agregarEjercicio" *ngIf="!item.firstName">
+              -
+            </td>
+            
+          </tr>
+        </tbody>
+      </table>
+      <!-- <ng-container *ngIf="showLoader" [ngTemplateOutlet]="loading"></ng-container> -->
+    </div>
+  </div>
+  
+  <div class="row px-5 fadeIn" *ngIf="data.length === 0 && showEmpty">
+    <div class="box-empty d-flex align-items-center justify-content-center flex-column">
+      <img class="icono" src="../../../assets/img/caja.png">
+      <span class="pt-2">No se encontraron resultados a la búsqueda <b>{{busquedaEmpty}}</b></span>
+    </div>
+  </div>
