@@ -14,7 +14,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import "moment/locale/es";
 import { FormsModule } from "@angular/forms";
 import { GeneralService } from "src/app/services/general.service";
-import { catchError, map, of, switchMap, take } from "rxjs";
+import { catchError, map, Observable, of, switchMap, take } from "rxjs";
 import { FullCalendarModule } from "@fullcalendar/angular";
 import { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -88,6 +88,23 @@ export class CalendarComponent {
     }
   }
 
+  private cargarTodoElCalendario(url?: string, acumulado: any[] = []): Observable<any[]> {
+    return this.generalService.getCalendario(url).pipe(
+      switchMap((response) => {
+        const nuevos = response.value || [];
+        const acumuladoActualizado = [...acumulado, ...nuevos];
+  
+        if (response['@odata.nextLink']) {
+          const nextLink = response['@odata.nextLink'];
+          return this.cargarTodoElCalendario(nextLink, acumuladoActualizado);
+        } else {
+          return of(acumuladoActualizado);
+        }
+      })
+    );
+  }
+  
+
   private obtenerDatos(): void {
     this.spinner = true;
     this.generalService
@@ -97,28 +114,38 @@ export class CalendarComponent {
         switchMap((response) => {
           const internalKey = response?.value?.[0]?.InternalKey;
           if (!internalKey) {
-             this.showError = true;
-            this.mensajeError = "No se encontró InternalKey en la respuesta."
+            this.showError = true;
+            this.mensajeError = "No se encontró InternalKey en la respuesta.";
+            return of(null);
           }
-          return this.generalService.getEmployedID(internalKey); 
+          return this.generalService.getEmployedID(internalKey);
         }),
         switchMap((response) => {
+          if (!response) return of([]);
+  
           this.employeeID = response?.value?.[0]?.EmployeeID;
           if (!this.employeeID) {
             this.showError = true;
-            this.mensajeError = "No se encontró EmployeeID en la respuesta."
+            this.mensajeError = "No se encontró EmployeeID en la respuesta.";
+            return of([]);
           }
-          return this.generalService.getCalendario();
+  
+          return this.cargarTodoElCalendario(); // 🔥 Paginación completa
         }),
         catchError((error) => {
+          this.showError = true;
+          this.mensajeError = "Ocurrió un error al obtener los datos.";
           return of([]);
         })
       )
       .subscribe({
-        next: (data) => (this.dataCalendar = data.value),
-        complete: () => this.obtenerDataLimpia(),
+        next: (data: any[]) => {
+          this.dataCalendar = data;
+        },
+        complete: () => this.obtenerDataLimpia()
       });
   }
+  
 
   public filtrarEventos(): any[] {
     if (!this.employeeID || !this.dataCalendar.length) return [];
@@ -206,6 +233,7 @@ export class CalendarComponent {
   }
 
   private obtenerDataLimpia(): void {
+    console.log(this.dataCalendar)
     if (!this.isManualFilter && this.dataCalendar.length) {
       this.dataFiltrada = [];
       this.dataOriginal = [];

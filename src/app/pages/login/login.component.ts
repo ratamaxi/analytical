@@ -37,7 +37,6 @@ export class LoginComponent implements OnDestroy {
   constructor(
     private fb: FormBuilder,
     private loginService: LoginService,
-    // private spinnerService: SpinnerService,
     private router: Router
   ) {
     sessionStorage.removeItem("token");
@@ -45,13 +44,12 @@ export class LoginComponent implements OnDestroy {
 
   public login(): void {
     let mappingData: LoginDataRequest = {
-      CompanyDB: this.name_BD,
+      CompanyDB: 'PRD_ANALYTICAL',
       UserName: this.getNameForm.value || '',
       Password: this.getPasswordForm.value || '',
     }
     localStorage.clear();
     sessionStorage.removeItem("token");
-    //this.spinnerService.setSpinnerState(true);
     this.loginService.login(mappingData).subscribe({
       next: () => {
         this.router.navigate(['/panel/home'])
@@ -59,10 +57,8 @@ export class LoginComponent implements OnDestroy {
       error: (err) => {
         console.log(err)
         Swal.fire("Error", 'El usuario o contraseña son incorrectos', "error");
-        //this.spinnerService.setSpinnerState(false);
       },
       complete: () => {
-        //this.spinnerService.setSpinnerState(false);
       },
     });
   }

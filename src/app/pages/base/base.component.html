@@ -29,7 +29,13 @@
 </div>
 </div>
 
-<div class="row">
+<div class="row" *ngIf="spinner">
+  <div class="col d-flex justify-content-center">
+    <app-spinner></app-spinner>
+  </div>
+</div>
+
+<div class="row" *ngIf="data.length">
   <div class="col tabla-scroll">
     <table class="table table-striped">
       <thead>

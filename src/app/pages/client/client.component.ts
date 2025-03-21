@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnDestroy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { Subject, takeUntil } from "rxjs";
+import { Observable, of, Subject, switchMap, takeUntil } from "rxjs";
 import { SpinnerComponent } from "src/app/components/spinner/spinner.component";
 import { GeneralService } from "src/app/services/general.service";
 
@@ -23,25 +23,46 @@ export class ClientComponent implements OnDestroy{
 
   constructor(private generalService: GeneralService) {}
 
-      public buscarDataLista():void{
-        this.spinner = true;
-        this.data = [];
-        this.dataList = [];
-        this.generalService.getListaDataCliente(this.busqueda).pipe(takeUntil(this.destroy$)).subscribe({
-          next:(resp) => { 
-            this.showEmpty = true,
-            this.dataList = resp.value;
-            this.busquedaEmpty = this.busqueda;
-          },
-          error:(error) => { console.log(error)},
-          complete:() => {
-            this.spinner = false;
-            setTimeout(() => {
-              this.showEmpty = false;
-            },2000);
-          }
-        })
+  public buscarDataLista(): void {
+    this.spinner = true;
+    this.data = [];
+    this.dataList = [];
+  
+    this.cargarTodosLosClientes(this.busqueda).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (result) => {
+        this.dataList = result;
+        this.busquedaEmpty = this.busqueda;
+        this.showEmpty = true;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+      complete: () => {
+        this.spinner = false;
+        setTimeout(() => {
+          this.showEmpty = false;
+        }, 2000);
       }
+    });
+  }
+
+  private cargarTodosLosClientes(busqueda: string, nextLink?: string, acumulado: any[] = []): Observable<any[]> {
+    return this.generalService.getListaDataCliente(busqueda, nextLink).pipe(
+      switchMap((response) => {
+        const nuevos = response.value || [];
+        const acumuladoActualizado = [...acumulado, ...nuevos];
+  
+        if (response['@odata.nextLink']) {
+          const next = response['@odata.nextLink'];
+          return this.cargarTodosLosClientes(busqueda, next, acumuladoActualizado);
+        } else {
+          return of(acumuladoActualizado);
+        }
+      })
+    );
+  }
+  
+  
       public buscarData(code: string):void{
         this.spinner = true;
         this.data = [];
