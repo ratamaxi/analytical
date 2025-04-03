@@ -88,6 +88,7 @@ export class GeneralService {
     const sessionId = localStorage.getItem('sessionId') || '';
     const headers = new HttpHeaders({
       'Cookie': sessionId,
+      'Prefer': 'odata.maxpagesize=100'
     });
     return this.http.get<any>(
       `/api/b1s/v2/EmployeesInfo?$select=EmployeeID,FirstName,LastName,ApplicationUserID`,

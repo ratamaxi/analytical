@@ -71,7 +71,12 @@ export class CalendarComponent {
       .getEmployesGeneric()
       .pipe(take(1))
       .subscribe({
-        next: (result) => (this.listaEmpleadosData = result.value),
+        next: (result) => {
+          const empleadosOrdenados = result.value.sort((a: any, b: any) => {
+            return a.LastName.localeCompare(b.LastName);
+          });
+          this.listaEmpleadosData = empleadosOrdenados;
+        },
         error: (error) => {
           this.showError = true;
           this.mensajeError = 'No se pudo consultar la lista de empleados'
@@ -233,7 +238,6 @@ export class CalendarComponent {
   }
 
   private obtenerDataLimpia(): void {
-    console.log(this.dataCalendar)
     if (!this.isManualFilter && this.dataCalendar.length) {
       this.dataFiltrada = [];
       this.dataOriginal = [];
@@ -274,7 +278,7 @@ export class CalendarComponent {
       const dataMock = {
         title: data.StartTime ? `Inicio: ${data.StartTime}` : "Inicio: -",
         date: this.convertirFecha(data.StartDate),
-        end: this.convertirFecha(data.EndDate),
+        end: (this.convertirFecha(data.EndDate, true)),
         extendedProps: {
           endTime: data.EndTime ? `Fin: ${data.EndTime}` : "Fin: -",
           cliente: data.customerCode && data.customerName 
@@ -286,7 +290,7 @@ export class CalendarComponent {
           ubicacion: data.AddressText || 'Sin Ubicación'
         }
       };
-      this.event.push(dataMock);
+        this.event.push(dataMock);
     }
     this.calendarOptions = {
       ...this.calendarOptions,
@@ -294,13 +298,13 @@ export class CalendarComponent {
     };
   }
 
-  private convertirFecha(fechaISO: string): string {
+  private convertirFecha(fechaISO: string, sumarUnDia: boolean = false): string {
     if (!fechaISO) return "";
     const date = new Date(fechaISO);
-    const year = date.getFullYear();
+  
+    const year = date.getFullYear(); // NO usar getUTCFullYear
     const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
+    let day =sumarUnDia ? String(date.getDate() + 2).padStart(2, "0") : String(date.getDate() + 1).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
 

@@ -9,7 +9,7 @@
     <div class="form">
       <i class="fa fa-search"></i>
       <input type="text" [(ngModel)]="busqueda" class="form-control form-input"
-        placeholder="Ingrese un valor a buscar...">
+        placeholder="Ingrese un valor a buscar..." (keydown.enter)="buscarData()">
     </div>
   </div>
   <div class="w-400 pl-3">
@@ -17,7 +17,8 @@
     <div class="form">
       <i class="fa fa-search"></i>
       <input type="text" [(ngModel)]="busquedaHandle" class="form-control form-input"
-        placeholder="Ingrese un System Handle...">
+        placeholder="Ingrese un System Handle..." (keydown.enter)="buscarData()">
+        
     </div>
   </div>
   <div class="pl-3 btn-top">

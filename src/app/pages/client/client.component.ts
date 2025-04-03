@@ -27,8 +27,7 @@ export class ClientComponent implements OnDestroy{
     this.spinner = true;
     this.data = [];
     this.dataList = [];
-  
-    this.cargarTodosLosClientes(this.busqueda).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cargarTodosLosClientes(this.busqueda.toUpperCase()).pipe(takeUntil(this.destroy$)).subscribe({
       next: (result) => {
         this.dataList = result;
         this.busquedaEmpty = this.busqueda;
