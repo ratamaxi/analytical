@@ -21,7 +21,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import esLocale from "@fullcalendar/core/locales/es";
 import { SpinnerComponent } from "src/app/components/spinner/spinner.component";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 
 @Component({
   selector: "app-calendar",
@@ -59,7 +59,7 @@ export class CalendarComponent {
   public spinner: boolean = false;
   private isManualFilter: boolean = false;
   public showError: boolean = false;
-  public mensajeError: string = '';
+  public mensajeError: string = "";
 
   constructor(private generalService: GeneralService) {
     this.listaEmpleados();
@@ -72,17 +72,25 @@ export class CalendarComponent {
       .pipe(take(1))
       .subscribe({
         next: (result) => {
-          const empleadosOrdenados = result.value.sort((a: any, b: any) => {
-            return a.LastName.localeCompare(b.LastName);
-          });
-          this.listaEmpleadosData = empleadosOrdenados;
+          const empleadosFiltradosYOrdenados = result.value
+            .filter((empleado: any) =>
+              empleado.EmployeeRolesInfoLines?.some(
+                (rol: any) => rol.RoleID === -2
+              )
+            )
+            .sort((a: any, b: any) =>
+              a.LastName.localeCompare(b.LastName)
+            );
+  
+          this.listaEmpleadosData = empleadosFiltradosYOrdenados;
         },
-        error: (error) => {
+        error: () => {
           this.showError = true;
-          this.mensajeError = 'No se pudo consultar la lista de empleados'
+          this.mensajeError = "No se pudo consultar la lista de empleados";
         },
       });
   }
+  
 
   public filtrarPorEmpleado(event: Event): void {
     this.dataFiltrada = [];
@@ -93,14 +101,17 @@ export class CalendarComponent {
     }
   }
 
-  private cargarTodoElCalendario(url?: string, acumulado: any[] = []): Observable<any[]> {
+  private cargarTodoElCalendario(
+    url?: string,
+    acumulado: any[] = []
+  ): Observable<any[]> {
     return this.generalService.getCalendario(url).pipe(
       switchMap((response) => {
         const nuevos = response.value || [];
         const acumuladoActualizado = [...acumulado, ...nuevos];
-  
-        if (response['@odata.nextLink']) {
-          const nextLink = response['@odata.nextLink'];
+
+        if (response["@odata.nextLink"]) {
+          const nextLink = response["@odata.nextLink"];
           return this.cargarTodoElCalendario(nextLink, acumuladoActualizado);
         } else {
           return of(acumuladoActualizado);
@@ -108,7 +119,6 @@ export class CalendarComponent {
       })
     );
   }
-  
 
   private obtenerDatos(): void {
     this.spinner = true;
@@ -127,14 +137,14 @@ export class CalendarComponent {
         }),
         switchMap((response) => {
           if (!response) return of([]);
-  
+
           this.employeeID = response?.value?.[0]?.EmployeeID;
           if (!this.employeeID) {
             this.showError = true;
             this.mensajeError = "No se encontró EmployeeID en la respuesta.";
             return of([]);
           }
-  
+
           return this.cargarTodoElCalendario(); // 🔥 Paginación completa
         }),
         catchError((error) => {
@@ -147,10 +157,9 @@ export class CalendarComponent {
         next: (data: any[]) => {
           this.dataCalendar = data;
         },
-        complete: () => this.obtenerDataLimpia()
+        complete: () => this.obtenerDataLimpia(),
       });
   }
-  
 
   public filtrarEventos(): any[] {
     if (!this.employeeID || !this.dataCalendar.length) return [];
@@ -168,7 +177,7 @@ export class CalendarComponent {
 
   public buscarFechas(): void {
     this.showTable = false;
-    this.isManualFilter = true; 
+    this.isManualFilter = true;
     const startDate = new Date(this.startDate);
     const endDate = new Date(this.endDate);
     startDate.setHours(0, 0, 0, 0);
@@ -202,15 +211,15 @@ export class CalendarComponent {
     initialView: "dayGridMonth",
     locale: esLocale,
     plugins: [dayGridPlugin, interactionPlugin],
-    eventClick: this.handleEventClick.bind(this), 
+    eventClick: this.handleEventClick.bind(this),
     events: this.event,
     eventContent: (arg) => {
-      const title = arg.event.title || '';
-      const endTime = arg.event.extendedProps['endTime'] || '';
-      const cliente = arg.event.extendedProps['cliente'] || '';
-      const lds = arg.event.extendedProps['lds'] || '';
-      const asunto = arg.event.extendedProps['asunto'] || '';
-  
+      const title = arg.event.title || "";
+      const endTime = arg.event.extendedProps["endTime"] || "";
+      const cliente = arg.event.extendedProps["cliente"] || "";
+      const lds = arg.event.extendedProps["lds"] || "";
+      const asunto = arg.event.extendedProps["asunto"] || "";
+
       return {
         html: `<div style="font-size: 12px; padding: 4px;">
           <strong>${title}</strong><br/>
@@ -218,57 +227,56 @@ export class CalendarComponent {
           ${cliente}<br/>
           ${lds}<br/>
           ${asunto}
-        </div>`
+        </div>`,
       };
-    }
+    },
   };
-  
+
   public handleEventClick(info: any): void {
     const evento = info.event;
-    const descripcion = evento.extendedProps['description'];
-    const ubicacion = evento.extendedProps['ubicacion'];
-  
+    const descripcion = evento.extendedProps["description"];
+    const ubicacion = evento.extendedProps["ubicacion"];
+
     Swal.fire({
       title: "Detalle del evento",
       html: `
       <p><strong>Descripción:</strong> ${descripcion}</p>
       <p><strong>Ubicación:</strong> ${ubicacion}</p>
     `,
-      });
+    });
   }
 
   private obtenerDataLimpia(): void {
     if (!this.isManualFilter && this.dataCalendar.length) {
       this.dataFiltrada = [];
       this.dataOriginal = [];
-  
+
       this.dataCalendar
         .filter((data: any) => data.ServiceCallSchedulings?.length)
         .forEach((data: any) => {
           if (Array.isArray(data.ServiceCallSchedulings)) {
-            const eventosFiltrados = data.ServiceCallSchedulings
-              .filter((sched: any) => sched.Technician === this.employeeID)
-              .map((sched: any) => ({
-                ...sched,
-                description: data.Description,
-                customerCode: data.CustomerCode,           
-                customerName: data.CustomerName,           
-                docNum: data.DocNum,                   
-                subject: data.Subject                 
-              }));
-  
+            const eventosFiltrados = data.ServiceCallSchedulings.filter(
+              (sched: any) => sched.Technician === this.employeeID
+            ).map((sched: any) => ({
+              ...sched,
+              description: data.Description,
+              customerCode: data.CustomerCode,
+              customerName: data.CustomerName,
+              docNum: data.DocNum,
+              subject: data.Subject,
+            }));
+
             if (eventosFiltrados.length > 0) {
               this.dataFiltrada.push(...eventosFiltrados);
             }
           }
         });
     }
-  
+
     this.mappingDataDate();
     this.showTable = true;
     this.isManualFilter = false;
   }
-  
 
   private mappingDataDate(): void {
     this.spinner = false;
@@ -278,19 +286,20 @@ export class CalendarComponent {
       const dataMock = {
         title: data.StartTime ? `Inicio: ${data.StartTime}` : "Inicio: -",
         date: this.convertirFecha(data.StartDate),
-        end: (this.convertirFecha(data.EndDate, true)),
+        end: this.convertirFecha(data.EndDate, true),
         extendedProps: {
           endTime: data.EndTime ? `Fin: ${data.EndTime}` : "Fin: -",
-          cliente: data.customerCode && data.customerName 
-                    ? `${data.customerCode} - ${data.customerName}` 
-                    : "Cliente: -",
+          cliente:
+            data.customerCode && data.customerName
+              ? `${data.customerCode} - ${data.customerName}`
+              : "Cliente: -",
           lds: data.docNum ? `LdS: ${data.docNum}` : "LdS: -",
           asunto: data.subject ? `Asunto: ${data.subject}` : "Asunto: -",
-          description: data.description || 'Sin descripción',
-          ubicacion: data.AddressText || 'Sin Ubicación'
-        }
+          description: data.description || "Sin descripción",
+          ubicacion: data.AddressText || "Sin Ubicación",
+        },
       };
-        this.event.push(dataMock);
+      this.event.push(dataMock);
     }
     this.calendarOptions = {
       ...this.calendarOptions,
@@ -298,13 +307,18 @@ export class CalendarComponent {
     };
   }
 
-  private convertirFecha(fechaISO: string, sumarUnDia: boolean = false): string {
+  private convertirFecha(
+    fechaISO: string,
+    sumarUnDia: boolean = false
+  ): string {
     if (!fechaISO) return "";
     const date = new Date(fechaISO);
-  
+
     const year = date.getFullYear(); // NO usar getUTCFullYear
     const month = String(date.getMonth() + 1).padStart(2, "0");
-    let day =sumarUnDia ? String(date.getDate() + 2).padStart(2, "0") : String(date.getDate() + 1).padStart(2, "0");
+    let day = sumarUnDia
+      ? String(date.getDate() + 2).padStart(2, "0")
+      : String(date.getDate() + 1).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
 

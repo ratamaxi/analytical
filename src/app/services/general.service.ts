@@ -91,7 +91,7 @@ export class GeneralService {
       'Prefer': 'odata.maxpagesize=100'
     });
     return this.http.get<any>(
-      `/api/b1s/v2/EmployeesInfo?$select=EmployeeID,FirstName,LastName,ApplicationUserID`,
+      `/api/b1s/v2/EmployeesInfo?$select=EmployeeID,FirstName,LastName,ApplicationUserID,EmployeeRolesInfoLines`,
       { headers }
     );
   }
