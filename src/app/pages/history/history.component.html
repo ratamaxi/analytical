@@ -13,6 +13,7 @@
           [(ngModel)]="busqueda"
           class="form-control form-input"
           placeholder="Ingrese el número de serie que desea buscar..."
+          (keydown.enter)="buscarData()"
         />
       </div>
     </div>

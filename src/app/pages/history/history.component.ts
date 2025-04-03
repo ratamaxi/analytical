@@ -28,7 +28,9 @@ export class HistoryComponent implements OnDestroy{
       this.data = [];
       this.spinner = true
       this.cargarHistorico(this.busqueda).pipe(takeUntil(this.destroy$)).subscribe({
-        next: (result:any) => {
+        next: (result:any[]) => {
+          console.log(result)
+          this.data = result.sort((a, b) => a["Llamada de Servicio"] - b["Llamada de Servicio"]);
           this.data = result;
           this.busquedaEmpty = this.busqueda;
           this.showEmpty = true;

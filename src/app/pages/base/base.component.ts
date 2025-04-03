@@ -27,7 +27,7 @@ export class BaseComponent implements OnDestroy{
   public buscarData(): void {
     this.data = [];
     this.spinner = true;
-    this.cargarBaseInstalada(this.busqueda, this.busquedaHandle).pipe(takeUntil(this.destroy$)).subscribe({
+    this.cargarBaseInstalada(this.busqueda.toUpperCase(), this.busquedaHandle.toUpperCase()).pipe(takeUntil(this.destroy$)).subscribe({
       next: (result) => {
         this.data = result;
         this.busquedaEmpty = this.busqueda;
